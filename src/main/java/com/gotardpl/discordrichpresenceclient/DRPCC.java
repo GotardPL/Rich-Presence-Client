@@ -12,14 +12,22 @@ import de.jcm.discordgamesdk.CreateParams;
 import de.jcm.discordgamesdk.activity.Activity;
 import de.jcm.discordgamesdk.activity.ActivityType;
 import java.awt.Color;
+import java.io.BufferedReader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.Instant;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
 
 /**
  *
@@ -28,6 +36,7 @@ import javax.swing.JOptionPane;
 public class DRPCC extends javax.swing.JFrame {
 
     static String path = System.getProperty("user.dir");
+    static File config = new File(path+"/src/config.txt");
     static CreateParams params;
     Thread Updater = new Thread();
     /**
@@ -194,6 +203,20 @@ public class DRPCC extends javax.swing.JFrame {
         }
         Updater = new Thread(new Update());
         Updater.start();
+        
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(config));
+            writer.print(jTextField1.getText()+"\n");
+            writer.print(jTextField2.getText()+"\n");
+            writer.print(jTextField4.getText()+"\n");
+            writer.print(jTextField3.getText()+"\n");
+            writer.print(jSpinner1.getValue()+"\n");
+            writer.print(jSpinner2.getValue());
+            
+            writer.close();
+        } catch (IOException ex) {
+            
+        }
 		
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -214,7 +237,7 @@ public class DRPCC extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws FileNotFoundException, IOException {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -246,6 +269,29 @@ public class DRPCC extends javax.swing.JFrame {
         });
 		// Initialize the Core
 		Core.init(new File(path+"/src/discord_game_sdk/lib/x86_64/discord_game_sdk.dll"));
+                
+                if(config.exists()){
+                    Scanner reader = new Scanner(new FileReader(config));
+                    
+                    //Please don't judge me for the spaghetti here, I can't figure out why shorter code doesn't work
+                    jTextField1 = new JTextField();
+                    jTextField2 = new JTextField();
+                    jTextField4 = new JTextField();
+                    jTextField3 = new JTextField();
+                    jSpinner1 = new JSpinner();
+                    jSpinner2 = new JSpinner();
+                    
+                    jTextField1.setText(reader.nextLine());
+                    jTextField2.setText(reader.nextLine());
+                    jTextField4.setText(reader.nextLine());
+                    jTextField3.setText(reader.nextLine());
+                    jSpinner1.setValue(Integer.parseInt(reader.nextLine()));
+                    jSpinner2.setValue(Integer.parseInt(reader.nextLine()));
+               
+                    reader.close();
+                }
+                else
+                    System.out.println("FILE NOT FOUND");
 	
 	}
     
@@ -290,6 +336,7 @@ public class DRPCC extends javax.swing.JFrame {
 					// Finally, update the current activity to our activity
 					core.activityManager().updateActivity(activity);
 				}
+                                
 
 				// Run callbacks forever
 				while(true)
